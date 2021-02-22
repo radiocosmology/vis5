@@ -128,5 +128,29 @@ complex conjugation.
 
 **OPTIONAL**: required only if the visibilities have been stacked.
 
-The stack axis describes how redundant visibilities have been added together.
+The stack axis describes how redundant visibilities have been added together. Each entry points to the index of a typical product that would have been averaged into the stack, and whether it would need to have been complex conjugated before averaging.
 
+This must consist of a datatype of two entries:
+- `prod` (type: `H5T_STD_U32LE`): an index into the `prod` axis that gives a product equivalent to this stacked visibility.
+- `conjugate` (type: `H5T_STD_U8LE` interpreted as boolean): whether the product must be conjugated (equivalent to reversing its `input_a`/`input_b` entries) for the stack to be equivalent.
+
+
+Note, in addition to the `stack` index map, it is highly recommended (required????) to have a `/reverse_map/stack` dataset. This allows us to explicitly identify which products have been averaged into a particular stack output. It is a dataset the length of the product axis, and for each product points to which stack entry it was placed in. If present, this must consist of a datatype with two entries:
+- `stack` (type: `H5T_STD_U32LE`): an index into the stacked axis which points to the stack entry this product was averaged into.
+- `conjugate` (type: `H5T_STD_U8LE` interpreted as boolean): whether the product must be conjugated before being added to the stack.
+
+(NOTE: what about entries that aren't stacked????)
+
+### Datasets
+
+#### vis
+
+#### flags/vis_weight
+
+## Recommendations
+
+### Stack order for CHIME
+
+The visibility datasets can now have a stack axis where before they would only have had a prod axis. This axis is sorted lexicographically by the key (pol1, pol2, cyl1, cyl2, feed_sep_NS). For example the first entry should correspond to (pol X, pol X, cyl A, cyl A, 0 feed sep NS) i.e. XX autos on Cyl A; the next entry would be (pol X, pol X, cyl A, cyl A, +1 feed sep NS) ...
+
+All stacked baselines are constructed such that they point towards the East (or for within cylinder baselines, point North).
