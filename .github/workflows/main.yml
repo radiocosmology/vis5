@@ -27,7 +27,7 @@ jobs:
       run: black --check .
 
     - name: Run flake8
-      run: flake8 --show-source --ignore=E501,E741,E203,W503,E266 caput
+      run: flake8 --show-source --ignore=E501,E741,E203,W503,E266 vis5
 
     - name: Run pylint
       run: >
