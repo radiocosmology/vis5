@@ -175,6 +175,16 @@ placed in. If present, this must consist of a datatype with two entries:
 
 (NOTE: what about entries that aren't stacked????)
 
+#### ev
+
+**OPTIONAL**: required only if there are [`eval`](#eval) or [`evec`](#evec) datasets present.
+
+This denotes different eigenmodes of the data. The eigenmodes are in *descending* order.
+
+It must consist of a datatype with a single entry `UINT32` entry giving the
+eigenvalue number (indexed from zero in descending order).
+
+
 ### Datasets
 
 Unless otherwise noted, the following datasets are all required for a compliant file.
@@ -182,8 +192,8 @@ The title for each entry gives the path relative to the file root.
 
 #### vis
 
-Axes: `(freq, [prod|stack], time)`
-Datatype: `COMPLEX64`
+- Axes: `(freq, [prod|stack], time)`
+- Datatype: `COMPLEX64`
 
 The visibilities for the data. As specified above, the visibilities are assumed to
 have conjugation convention:
@@ -192,8 +202,8 @@ $$V_{ab}(\nu, t) = \left\langle x_a(\nu, t) x_b(\nu, t)^* \right\rangle$$
 
 #### gain
 
-Axes: `(freq, input, time)`
-Datatype: `COMPLEX64`
+- Axes: `(freq, input, time)`
+- Datatype: `COMPLEX64`
 
 The gain that was *applied* to each correlator input. The exact interpretation of
 this gain, and the intended calibration of the visibility data for the telescope is
@@ -202,8 +212,8 @@ left up to the implementer.
 
 #### flags/vis_weight
 
-Axes: same as `/vis`
-Datatype: `FLOAT32`
+- Axes: same as `/vis`
+- Datatype: `FLOAT32`
 
 An estimate of the "weight" of each piece of data. Weight is defined as the *inverse
 variance* of each entry of the visibility dataset. Note that in this definition, a
@@ -213,8 +223,8 @@ data.
 
 #### flags/input
 
-Axes: `(input, time)`
-Datatype: `FLOAT32`
+- Axes: `(input, time)`
+- Datatype: `FLOAT32`
 
 The flag a given input should be given. This is used to indicate the integrity of
 each input with time and give it a weighting. This is most important when the data
@@ -222,6 +232,80 @@ has been redundant baseline averaged (and thus has a `stack` axis), and should b
 interpreted as the relative weight given to each input in the redundant baseline
 averaging procedure. If a feed has weight zero, that should be interpreted as a "bad"
 input and no correlation product using it would be included in the stacked output.
+
+
+#### flags/frac_lost
+
+- Axes: `(input, time)`
+- Datatype: `FLOAT32`
+
+The fraction of data for each freq-time sample that has been lost for *any* reasons.
+This is used to determine the true integration time of each sample. It is assumed to
+be *independent* of input or product.
+
+
+#### flags/frac_rfi
+
+**OPTIONAL**
+
+- Axes: `(input, time)`
+- Datatype: `FLOAT32`
+
+The fraction of data for each freq-time sample that has been lost for solely due to
+RFI flagging. Any flagging here must be included within [`flags/frac_lost`] such that
+the corresponding entry in that dataset must be equal to or larger than the entry
+here. This is used for monitoring the RFI environment, and is again assumed to be
+*independent* of input or product.
+
+
+#### eval
+
+**OPTIONAL**
+
+- Axes: `(freq, ev, time)`
+- Datatype: `FLOAT32`
+
+The eigenvalue of the decomposed correlation matrix.
+
+
+#### evec
+
+**OPTIONAL**
+
+- Axes: `(freq, ev, input, time)`
+- Datatype: `COMPLEX64`
+
+The eigenvectors of the decomposed correlation matrix.
+
+
+#### erms
+
+**OPTIONAL**
+
+- Axes: `(freq, time)`
+- Datatype: `FLOAT32`
+
+The root-mean-square of the remaining eigenvalues of the matrix. This is related to
+the average residual between the correlation matrix and the rank-N approximation
+formed from the N eigenvalues returned.
+
+
+#### flags/dataset_id
+
+**OPTIONAL**
+
+- Axes: `(freq, time)`
+- Datatype: length-32 string interpreted as a hexadecimal string hash
+
+This is a unique identifier identify the set of transformations that have been done
+to the data. Although this can in theory be filled in an arbitrary way by the
+implementer it is designed to be used by the Dataset Manager framework within
+`kotekan`. Within that framework the dataset ID is derived from a 128-bit hash that
+identifies the full set of transformations that have been done to the data.
+Dynamically changing parameters like the RFI flagging, or updating the flagged inputs
+all represent distinct transformations and will thus cause the data to be given
+distinct dataset IDs.
+
 
 ## Recommendations
 
