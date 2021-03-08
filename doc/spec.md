@@ -311,7 +311,11 @@ all represent distinct transformations and will thus cause the data to be given
 distinct dataset IDs.
 
 
+
 ## Recommendations
+
+### Compression and Filtering
+
 
 ### Stack order for CHIME
 
