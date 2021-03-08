@@ -110,7 +110,11 @@ Each axis must have an entry under `/index_map/`.
 This axis gives the **start** time of each sample in an acquisition.
 
 It must consist of a datatype of two entries:
-- `fpga_count` (type: `UINT64`): an integer sequence number for the output from the correlator. This should be an exact counter with no rounding.
+- `fpga_count` (type: `UINT64`): an integer sequence number for the output from the
+  correlator. This should be an exact counter with no rounding. *NOTE*: for
+  historical reasons this entry is named `fpga_count` and though using this name is
+  **strongly** recommended, it is not required, and the implementer may choose any
+  *appropriate name.
 - `ctime` (type: `FLOAT64`): the UTC time since the UNIX epoch in floating point seconds.
 
 #### freq
@@ -311,6 +315,11 @@ distinct dataset IDs.
 
 ### Stack order for CHIME
 
-The visibility datasets can now have a stack axis where before they would only have had a prod axis. This axis is sorted lexicographically by the key (pol1, pol2, cyl1, cyl2, feed_sep_NS). For example the first entry should correspond to (pol X, pol X, cyl A, cyl A, 0 feed sep NS) i.e. XX autos on Cyl A; the next entry would be (pol X, pol X, cyl A, cyl A, +1 feed sep NS) ...
+The visibility datasets can now have a stack axis where before they would only have
+had a prod axis. This axis is sorted lexicographically by the key (pol1, pol2, cyl1,
+cyl2, feed_sep_NS). For example the first entry should correspond to (pol X, pol X,
+cyl A, cyl A, 0 feed sep NS) i.e. XX autos on Cyl A; the next entry would be (pol X,
+pol X, cyl A, cyl A, +1 feed sep NS) ...
 
-All stacked baselines are constructed such that they point towards the East (or for within cylinder baselines, point North).
+All stacked baselines are constructed such that they point towards the East (or for
+within cylinder baselines, point North).
