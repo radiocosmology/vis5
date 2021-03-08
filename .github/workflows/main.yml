@@ -1,0 +1,36 @@
+name: vis5-ci-build
+on:
+  pull_request:
+    branches:
+    - main
+  push:
+    branches:
+    - main
+
+jobs:
+
+  lint-code:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.9
+
+    - name: Install linters
+      run: pip install black pylint flake8
+
+    - name: Check code with black
+      run: black --check .
+
+    - name: Run flake8
+      run: flake8 --show-source --ignore=E501,E741,E203,W503,E266 vis5
+
+    - name: Run pylint
+      run: >
+        pylint -d
+        line-too-long,invalid-name,import-outside-toplevel,logging-fstring-interpolation,unnecessary-pass,no-else-return
+        vis5
