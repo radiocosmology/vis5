@@ -29,7 +29,7 @@ located at the leaves and groups at any intermediate position. Paths within HDF5
 files are typically listed as a UNIX file path would be, e.g.
 `/group1/group2/dataset`.
 
-HDF5 has many advanced features for controlling how its data is stored, but it is
+HDF5 has many advanced features for controlling how its data are stored, but it is
 worth highlighting two:
 
 - Chunking: rather than storing data as a monolithic blob on disk, HDF5 can break a
@@ -37,7 +37,7 @@ dataset up into arbitrary sized n-dimensional chunks that tile the n-dimensional
 dataset, each of which is stored contiguously. This allows much faster IO for access
 patterns that stride the dataset.
 - Filtering: when a dataset is chunked it is also possible to apply filters to it.
-These filters can apply arbitrary transforms on the data as it is read and written
+These filters can apply arbitrary transforms on the data as they are read and written
 such as compression.
 
 
@@ -46,11 +46,11 @@ such as compression.
 HDF5 is in many ways is a *meta-format*. It gives a mechanism for defining encoding
 arbitrary multi-dimensional datasets within a single file, along with their metadata.
 However, to produce a usable file format for a specification application we need to
-further specify how this data is structured within the file, things like dataset
+further specify how these data are structured within the file, things like dataset
 names, required metadata, types of datasets.
 
 This file format adopts the conventions used within the `BasicCont` type of the
-[caput](https://github.com/radiocosmology/caput/) to ensure that the data is fairly
+[caput](https://github.com/radiocosmology/caput/) to ensure that the data are fairly
 self-documented. These are:
 
 - Datasets must have named axes representing each dimension. The names of these axes
@@ -69,8 +69,8 @@ self-documented. These are:
 
 ## Vis5 specification
 
-Vis5 files are designed to store visibility data from telescopes like CHIME, along
-side all the data that is needed to understand them, such as metadata about what was
+Vis5 files are designed to store visibility data from telescopes like CHIME, alongside
+all the data that are needed to understand them, such as metadata about what was
 being observed, noise estimates, applied gains, feeds that were flagged out.
 Additionally this format is designed to support *stacked* visibilities that have been
 averaged redundant baselines.
@@ -82,12 +82,12 @@ Vis5 file.
 ### Datatypes
 
 We specify the datatypes required for both the datasets and axis definitions below.
-For readability we use the follow shorthands, which are defined in terms of the
+For readability we use the following shorthands, which are defined in terms of the
 fundamental HDF5 types as:
 - `BOOL`: `H5T_STD_U8LE` with 0 meaning False and > 0 meaning True (though 1 is the
   preferred value).
 - `UINT16`: `H5T_STD_U16LE`
-- `UINT32`: `H5T_STD_U16LE`
+- `UINT32`: `H5T_STD_U32LE`
 - `UINT64`: `H5T_STD_U64LE`
 - `FLOAT64`: `H5T_IEEE_F64LE`
 - `COMPLEX64` A single precision complex number. This is a *compound datatype*
@@ -119,7 +119,7 @@ It must consist of a datatype of two entries:
 
 #### freq
 
-The physical frequency of each observed channel.
+The frequency in physical units of each observed channel.
 
 It must consist of a datatype of two entries:
 - `centre` (type: `FLOAT64`): the "centre" of the frequency channel in MHz.
@@ -134,13 +134,13 @@ telescope is left up to the implementer.
 This describes each input to the correlator.
 
 It must consist of a datatype of two entries:
-- `chan_id` (type: `UINT16` or larger): an integer ID assigned to each input channel.
+- `chan_id` (type: `min UINT16`): an integer ID assigned to each input channel.
 - `correlator_input` (type: length 32 ASCII string): a string label (e.g. a serial
   number for each input).
 
 #### prod
 
-This describes which the inputs that have been combined into a correlation product.
+This describes inputs that have been combined into a correlation product.
 
 It must consist of a datatype of two entries:
 - `input_a` (type: `min UINT16`): the first input in the correlation. This is
@@ -165,7 +165,6 @@ This must consist of a datatype of two entries:
 - `conjugate` (type: `BOOL`): whether the product must
   be conjugated (equivalent to reversing its `input_a`/`input_b` entries) for the stack
   to be equivalent.
-
 
 Note, in addition to the `stack` index map, it is highly recommended (required????)
 to have a `/reverse_map/stack` dataset. This allows us to explicitly identify which
@@ -230,9 +229,9 @@ data.
 - Axes: `(input, time)`
 - Datatype: `FLOAT32`
 
-The flag a given input should be given. This is used to indicate the integrity of
+The weight a given input should be given. This is used to indicate the integrity of
 each input with time and give it a weighting. This is most important when the data
-has been redundant baseline averaged (and thus has a `stack` axis), and should be
+have been redundant baseline averaged (and thus have a `stack` axis), and should be
 interpreted as the relative weight given to each input in the redundant baseline
 averaging procedure. If a feed has weight zero, that should be interpreted as a "bad"
 input and no correlation product using it would be included in the stacked output.
@@ -290,8 +289,8 @@ The eigenvectors of the decomposed correlation matrix.
 - Datatype: `FLOAT32`
 
 The root-mean-square of the remaining eigenvalues of the matrix. This is related to
-the average residual between the correlation matrix and the rank-N approximation
-formed from the N eigenvalues returned.
+the average residual between the correlation matrix and the rank-*N* approximation
+formed from the *N* eigenvalues returned.
 
 
 #### flags/dataset_id
